@@ -132,6 +132,20 @@ func (c *Client) Doc(path string) *DocumentRef {
 	return doc
 }
 
+// https://github.com/googleapis/google-cloud-go/issues/1438
+// making a fork per bashtian's awesome issue so I can try out his new function
+func (c *Client) NewDocumentSnapshot(proto *pb.Document) (*DocumentSnapshot, error) {
+	docRef, err := pathToDoc(proto.Name, c)
+	if err != nil {
+		return nil, err
+	}
+	doc, err := newDocumentSnapshot(docRef, proto, c, proto.UpdateTime)
+	if err != nil {
+		return nil, err
+	}
+	return doc, nil
+}
+
 // CollectionGroup creates a reference to a group of collections that include
 // the given ID, regardless of parent document.
 //
