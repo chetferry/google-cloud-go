@@ -130,6 +130,7 @@ func withResourceHeader(ctx context.Context, resource string) context.Context {
 	return metadata.NewOutgoingContext(ctx, md)
 }
 
+
 // Collection creates a reference to a collection with the given path.
 // A path is a sequence of IDs separated by slashes.
 //
@@ -146,6 +147,21 @@ func (c *Client) Collection(path string) *CollectionRef {
 func (c *Client) Doc(path string) *DocumentRef {
 	_, doc := c.idsToRef(strings.Split(path, "/"), c.path())
 	return doc
+}
+
+// https://github.com/googleapis/google-cloud-go/issues/1438
+// making a fork per bashtian's awesome issue so I can try out his new function
+
+func (c *Client) NewDocumentSnapshot(proto *pb.Document) (*DocumentSnapshot, error) {
+	docRef, err := pathToDoc(proto.Name, c)
+	if err != nil {
+		return nil, err
+	}
+	doc, err := newDocumentSnapshot(docRef, proto, c, proto.UpdateTime)
+	if err != nil {
+		return nil, err
+	}
+	return doc, nil
 }
 
 // CollectionGroup creates a reference to a group of collections that include
